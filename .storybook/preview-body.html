@@ -1,0 +1,38 @@
+<script>
+	let components = new Map();
+
+	function loadAndInitComponents (elContext = document) {
+		elContext.querySelectorAll('[data-js-component]').forEach(async (elComponent) => {
+			const path = `/${ elComponent.dataset.jsComponent }/${ elComponent.dataset.jsComponent }.mjs`;
+			const Component = await import(path);
+			const component = Component.default(elComponent);
+			components.set(elComponent.dataset.jsComponent, component);
+			component.init();
+		});
+	}
+
+	// Select the node that will be observed for mutations
+	const targetNode = document.body;
+
+	// Options for the observer (which mutations to observe)
+	const config = { attributes: true, childList: true, subtree: true };
+
+	// Callback function to execute when mutations are observed
+	const callback = function(mutationsList, observer) {
+		// Use traditional 'for loops' for IE 11
+		for(let mutation of mutationsList) {
+			// console.log(mutation);
+			if (mutation.type === 'childList' && mutation.target.matches('#root')) {
+				loadAndInitComponents(mutation.target);
+				// stop observing
+				observer.disconnect();
+			}
+		}
+	};
+
+	// Create an observer instance linked to the callback function
+	const observer = new MutationObserver(callback);
+
+	// Start observing the target node for configured mutations
+	observer.observe(targetNode, config);
+</script>

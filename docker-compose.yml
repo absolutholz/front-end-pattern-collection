@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  storybook:
+    build:
+      context: .
+      dockerfile: ./docker-config/storybook/Dockerfile
+    working_dir: /var/www/storybook
+    ports:
+      - 6006:6006 # storybook
+    volumes:
+      - ./:/var/www/storybook
+    command: npm run storybook
