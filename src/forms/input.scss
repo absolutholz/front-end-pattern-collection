@@ -1,0 +1,61 @@
+@import "./input.variables";
+
+%input-focus {
+	border-color: $input-border-color-focus;
+	box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+}
+
+// reset and use class (.input) so that it is simpler to override
+input,
+button,
+optgroup,
+select,
+textarea {
+	background: none;
+	border: 0;
+	color: inherit;
+	outline: none;
+}
+
+.input {
+	background: $input-background-color;
+	border: $input-border-width solid $input-border-color;
+	border-radius: $input-border-radius;
+	display: block;
+	padding: $input-spacing-vertical $input-spacing-horizontal;
+	width: 100%;
+
+	&:focus {
+		@extend %input-focus;
+	}
+}
+
+/**
+ * Compound input component consisting of more than one element.
+ * Examples:
+ *  - password field with show/hide toggler
+ *  - email field with symbol before field
+ */
+.compound-input {
+	display: flex;
+	padding: 0;
+
+	&__input {
+		flex: 1 0 auto;
+		min-width: 0;
+		padding: $input-spacing-vertical $input-spacing-horizontal;
+	}
+
+	&__prefix,
+	&__suffix {
+		align-items: center;
+		display: flex;
+		flex: 0 1 auto;
+		justify-content: center;
+	}
+
+	// no IE11 support
+	&:focus-within {
+		@extend %input-focus;
+	}
+}
