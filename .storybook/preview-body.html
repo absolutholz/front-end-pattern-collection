@@ -1,38 +1,43 @@
 <script>
-	let components = new Map();
+const componentPathMap = {
+	'PasswordRevealer': '/forms/Password/PasswordRevealer.mjs',
+};
 
-	function loadAndInitComponents (elContext = document) {
-		elContext.querySelectorAll('[data-js-component]').forEach(async (elComponent) => {
-			const path = `/${ elComponent.dataset.jsComponent }/${ elComponent.dataset.jsComponent }.mjs`;
-			const Component = await import(path);
-			const component = Component.default(elComponent);
-			components.set(elComponent.dataset.jsComponent, component);
-			component.init();
-		});
-	}
+let components = new Map();
 
-	// Select the node that will be observed for mutations
-	const targetNode = document.body;
+function loadAndInitComponents (elContext = document) {
+	elContext.querySelectorAll('[data-js-component]').forEach(async (elComponent) => {
+		console.log(elComponent, elComponent.dataset.jsComponent);
+		const path = componentPathMap[elComponent.dataset.jsComponent] || `/${ elComponent.dataset.jsComponent }/${ elComponent.dataset.jsComponent }.mjs`;
+		const Component = await import(path);
+		const component = Component.default(elComponent);
+		components.set(elComponent.dataset.jsComponent, component);
+		component.init();
+	});
+}
 
-	// Options for the observer (which mutations to observe)
-	const config = { attributes: true, childList: true, subtree: true };
+// Select the node that will be observed for mutations
+const targetNode = document.body;
 
-	// Callback function to execute when mutations are observed
-	const callback = function(mutationsList, observer) {
-		// Use traditional 'for loops' for IE 11
-		for(let mutation of mutationsList) {
-			// console.log(mutation);
-			if (mutation.type === 'childList' && mutation.target.matches('#root')) {
-				loadAndInitComponents(mutation.target);
-				// stop observing
-				observer.disconnect();
-			}
+// Options for the observer (which mutations to observe)
+const config = { attributes: true, childList: true, subtree: true };
+
+// Callback function to execute when mutations are observed
+const callback = function(mutationsList, observer) {
+	// Use traditional 'for loops' for IE 11
+	for(let mutation of mutationsList) {
+		// console.log(mutation);
+		if (mutation.type === 'childList' && mutation.target.matches('#root')) {
+			loadAndInitComponents(mutation.target);
+			// stop observing
+			observer.disconnect();
 		}
-	};
+	}
+};
 
-	// Create an observer instance linked to the callback function
-	const observer = new MutationObserver(callback);
+// Create an observer instance linked to the callback function
+const observer = new MutationObserver(callback);
 
-	// Start observing the target node for configured mutations
-	observer.observe(targetNode, config);
+// Start observing the target node for configured mutations
+observer.observe(targetNode, config);
 </script>

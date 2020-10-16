@@ -1,7 +1,12 @@
 const path = require('path');
 
 module.exports = ({ config }) => {
-	config.resolve.modules.push(path.resolve(__dirname, "../src"));
+	// config.resolve.modules.push(path.resolve(__dirname, "../src"));
+	config.resolve.modules = [
+		...(config.resolve.modules || []),
+		path.resolve('./src'),
+		// path.resolve('./'),
+	];
 
 	config.module.rules.push({
 		test: /\.(scss)$/,
